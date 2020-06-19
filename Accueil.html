@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Adresse</title>
+        <link rel="icon" type="image/jpg" href="ressources/favicon.jpg" />
+        <link rel="stylesheet" href="./css/style.css" />
+        <meta charset="UTF-8">
+    </head>
+
+    <body>
+        <header>
+            <h1 id='titre '>Adresse</h1>
+        </header>
+        
+        <section>
+            <form Name='adresse_formulaire' id='form'>
+                <input type="text" id="adresse" placeholder="Saisir une adresse">
+                <button id="validate" type="button" onclick="valider()" >Valider</button>
+            </form> 
+            
+            <div>
+                
+            </div>
+
+
+        </section>
+
+        <footer>
+            Application Adresse - BAUTRAIS Klervia - 2020
+            <i class="wi .wi-wu-unknown"></i>
+        </footer>
+
+
+
+        <Script language='javascript'>
+            /*
+            Fonction declenchee par l appui sur le bouton valider et qui permet de recuperer les donnees de l adresse rentree dans le formulaire et les affiche
+            */
+            function valider(){
+
+                var nbElem = 8;
+                //Creation d une instance  httprequest
+                var xhr = new XMLHttpRequest();
+                var requete ='https://api-adresse.data.gouv.fr/search/?q='+encodeURIComponent(adresse_formulaire.adresse.value)+'&limit='+nbElem;
+                xhr.open('GET', requete, true);
+
+                xhr.onreadystatechange = function() {
+                    if (this.readyState == 4 && this.status == 200) {
+
+                        var result = JSON.parse(xhr.responseText);
+
+                        //Appel a la fonction d affichage des sections
+                        afficherResultats(result);
+
+                    }
+                };
+
+                xhr.send();
+            }
+
+            /*
+            Fonction qui permet d afficher les resultats de la recherche d adresse sous forme de liste
+            */
+            function afficherResultats(jsonObj){
+
+                //Stocke les elements du formalaire dans des variables
+                var section = document.querySelector('div');
+                
+                //Vide le contenu de la balise div
+                if (section != "") {
+                    document.querySelector('div').innerHTML = "";
+                }
+                
+                //Declaration du tableau contenant les resultats de la recherche
+                var ad = jsonObj.features;
+      
+                for (var i = 0; i < ad.length; i++) {
+                    //Initialisation des variables
+                    var monElement = document.createElement('article');
+                    var monLabel = document.createElement('p');
+                    var monContext = document.createElement('p');
+                    var mesCoor = document.createElement('p');
+                    var maCarte = document.createElement('a');
+                    var mesCoordonnees = document.createElement('ul');
+
+                    //Attribution des valeurs
+                    monLabel.textContent = ad[i].properties.label;
+                    monContext.textContent = ad[i].properties.context;
+                    mesCoor.textContent = 'Coordonnées:';
+                        
+                    var coordonnees = ad[i].geometry.coordinates;
+                    
+                    for (var j = 0; j < coordonnees.length; j++) {
+                        var coor = document.createElement('li');
+                        coor.textContent = coordonnees[j];
+                        mesCoordonnees.appendChild(coor);
+                    }
+
+                    maCarte.id='href';
+                    maCarte.style.color = 'blue';
+                    maCarte.style.textDecoration = 'underline';
+                    maCarte.textContent= 'https://www.google.fr/maps/place/'+encodeURIComponent(ad[i].properties.label);
+                    
+
+                    //Ajout des noeuds à la fin de la liste des enfants
+                    monElement.appendChild(monLabel);
+                    monElement.appendChild(monContext);
+                    monElement.appendChild(mesCoor);
+                    monElement.appendChild(mesCoordonnees);
+                    monElement.appendChild(maCarte);
+
+                    section.appendChild(monElement);
+                }
+            }
+
+        </Script>
+    </body>
+</html>
