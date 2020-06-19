@@ -96,10 +96,9 @@
                         mesCoordonnees.appendChild(coor);
                     }
 
-                    maCarte.id='href';
-                    maCarte.style.color = 'blue';
-                    maCarte.style.textDecoration = 'underline';
-                    maCarte.textContent= 'https://www.google.fr/maps/place/'+encodeURIComponent(ad[i].properties.label);
+                    maCarte.href='https://www.google.fr/maps/place/'+encodeURIComponent(ad[i].properties.label);
+                    maCarte.style.color = 'aquamarine';
+                    maCarte.textContent= 'Voir la carte';
                     
 
                     //Ajout des noeuds à la fin de la liste des enfants
